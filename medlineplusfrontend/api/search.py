@@ -16,7 +16,7 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+app = FastAPI(root_path="/api")
 
 # More permissive CORS settings
 app.add_middleware(
@@ -52,7 +52,7 @@ class SearchQuery(BaseModel):
     n_results: int = 5
     language: str = "English"
 
-@app.post("/api/search")
+@app.post("/search")
 async def search(search_query: SearchQuery):
     logger.info(f"Search endpoint called with query: {search_query}")
     try:
@@ -97,7 +97,7 @@ async def search(search_query: SearchQuery):
         logger.error(f"Search error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/api/test")
+@app.get("/test")
 async def test():
     try:
         # Test the connection with a simple query
@@ -119,7 +119,7 @@ async def test():
             "error": str(e)
         }
 
-@app.get("/api/hello")
+@app.get("/hello")
 async def hello():
     logger.info("Hello endpoint called")
     return {"message": "Hello World", "timestamp": str(datetime.now())}
@@ -131,8 +131,8 @@ async def root():
         "status": "online",
         "time": str(datetime.now()),
         "endpoints": [
-            "/api/hello",
-            "/api/search",
-            "/api/test"
+            "/hello",
+            "/search",
+            "/test"
         ]
     }
