@@ -6,6 +6,8 @@ import os
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import logging
+from fastapi.responses import JSONResponse
+from fastapi import Request
 
 # Load environment variables
 load_dotenv()
@@ -16,15 +18,13 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-# Configure CORS with more permissive settings
+# Configure CORS to accept all Vercel deployments
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
-    allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
-    expose_headers=["*"],
-    max_age=3600,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=False,  # Must be False when allow_origins=["*"]
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Initialize Supabase client
@@ -104,6 +104,6 @@ async def test():
             "error": str(e)
         }
 
-@app.options("/api/{path:path}")
-async def options_handler(path: str):
-    return {}  # Handle OPTIONS requests explicitly
+@app.get("/api/hello")
+async def hello():
+    return {"message": "Hello World"}

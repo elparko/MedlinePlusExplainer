@@ -34,7 +34,7 @@
     <script>
         const API_BASE_URL = window.location.hostname === 'localhost' 
             ? '' 
-            : 'https://plainmed-852ed8tsh-elparkos-projects.vercel.app';
+            : window.location.origin;
 
         async function testSearch() {
             const query = document.getElementById('searchQuery').value;
@@ -111,6 +111,16 @@
             } catch (error) {
                 document.getElementById('personalInfoResult').textContent = 
                     `Error: ${error.message}`;
+            }
+        }
+
+        async function testHello() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/hello`);
+                const data = await response.json();
+                console.log('Hello response:', data);
+            } catch (error) {
+                console.error('Hello error:', error);
             }
         }
     </script>
