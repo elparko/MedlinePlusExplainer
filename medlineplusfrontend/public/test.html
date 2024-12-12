@@ -38,9 +38,10 @@
     </div>
 
     <script>
-        const API_BASE_URL = '';
-        console.log('Current hostname:', window.location.hostname);
-        console.log('Current origin:', window.location.origin);
+        console.log('Script starting...');
+        
+        const API_BASE_URL = window.location.origin;
+        console.log('Current URL:', window.location.href);
         console.log('API Base URL:', API_BASE_URL);
 
         async function testSearch() {
@@ -119,10 +120,17 @@
         }
 
         async function testHello() {
+            const url = `${API_BASE_URL}/api/hello`;
+            console.log('Testing hello endpoint:', url);
+            
             try {
-                const response = await fetch(`${API_BASE_URL}/api/hello`);
+                console.log('Sending request to:', url);
+                const response = await fetch(url);
+                console.log('Response:', response);
+                
                 const data = await response.json();
-                console.log('Hello response:', data);
+                console.log('Hello response data:', data);
+                
                 document.getElementById('helloResult').textContent = 
                     JSON.stringify(data, null, 2);
             } catch (error) {
@@ -131,6 +139,11 @@
                     `Error: ${error.message}`;
             }
         }
+
+        window.onload = function() {
+            console.log('Page loaded, testing API connection...');
+            testHello();
+        };
     </script>
 </body>
 </html> 
