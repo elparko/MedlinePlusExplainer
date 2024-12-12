@@ -7,6 +7,8 @@
         .result { margin-top: 20px; white-space: pre-wrap; }
         button { margin: 5px; padding: 5px 10px; }
         input, select { margin: 5px; padding: 5px; }
+        .error { color: red; }
+        .success { color: green; }
     </style>
 </head>
 <body>
@@ -24,30 +26,25 @@
     </div>
 
     <div>
-        <h3>Personal Info</h3>
-        <input type="text" id="userId" placeholder="User ID">
-        <button onclick="getPersonalInfo()">Get Personal Info</button>
-        <button onclick="createPersonalInfo()">Create Personal Info</button>
-        <div id="personalInfoResult" class="result"></div>
-    </div>
-
-    <div>
         <h3>Test Connection</h3>
         <button onclick="testHello()">Test API Connection</button>
         <div id="helloResult" class="result"></div>
     </div>
 
     <script>
-        console.log('Script starting...');
+        // API base URL - change this to match your Vercel deployment
+        const API_BASE_URL = window.location.origin + '/api';
+        
+        console.log('Script starting...', 'API_BASE_URL:', API_BASE_URL);
         
         async function testSearch() {
             const query = document.getElementById('searchQuery').value;
             const language = document.getElementById('language').value;
             
-            console.log('Sending search request to /api/search');
+            console.log('Sending search request to', `${API_BASE_URL}/search`);
             
             try {
-                const response = await fetch('/api/search', {
+                const response = await fetch(`${API_BASE_URL}/search`, {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
@@ -72,52 +69,19 @@
                 
                 document.getElementById('searchResult').textContent = 
                     JSON.stringify(data, null, 2);
+                document.getElementById('searchResult').className = 'result success';
             } catch (error) {
                 console.error('Search error:', error);
                 document.getElementById('searchResult').textContent = 
                     `Error: ${error.message}`;
-            }
-        }
-
-        async function getPersonalInfo() {
-            const userId = document.getElementById('userId').value;
-            try {
-                const response = await fetch(`/api/personal-info/${userId}`);
-                const data = await response.json();
-                document.getElementById('personalInfoResult').textContent = 
-                    JSON.stringify(data, null, 2);
-            } catch (error) {
-                document.getElementById('personalInfoResult').textContent = 
-                    `Error: ${error.message}`;
-            }
-        }
-
-        async function createPersonalInfo() {
-            const userId = document.getElementById('userId').value;
-            try {
-                const response = await fetch('/api/personal-info', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        user_id: userId,
-                        age_range: '18-30',
-                        gender: 'male',
-                        language: 'English'
-                    })
-                });
-                const data = await response.json();
-                document.getElementById('personalInfoResult').textContent = 
-                    JSON.stringify(data, null, 2);
-            } catch (error) {
-                document.getElementById('personalInfoResult').textContent = 
-                    `Error: ${error.message}`;
+                document.getElementById('searchResult').className = 'result error';
             }
         }
 
         async function testHello() {
             console.log('Testing hello endpoint');
             try {
-                const response = await fetch('/api/hello');
+                const response = await fetch(`${API_BASE_URL}/hello`);
                 console.log('Response:', response);
                 
                 const data = await response.json();
@@ -125,10 +89,12 @@
                 
                 document.getElementById('helloResult').textContent = 
                     JSON.stringify(data, null, 2);
+                document.getElementById('helloResult').className = 'result success';
             } catch (error) {
                 console.error('Hello error:', error);
                 document.getElementById('helloResult').textContent = 
                     `Error: ${error.message}`;
+                document.getElementById('helloResult').className = 'result error';
             }
         }
 
@@ -138,4 +104,4 @@
         };
     </script>
 </body>
-</html> 
+</html>

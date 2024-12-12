@@ -1,12 +1,9 @@
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Optional
 import os
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import logging
-from fastapi.responses import JSONResponse
 from datetime import datetime
 
 # Load environment variables
@@ -16,30 +13,7 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(root_path="/api")
-
-# More permissive CORS settings
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,  # Must be False when using allow_origins=["*"]
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"],
-    max_age=3600,
-)
-
-@app.options("/{path:path}")
-async def options_route(path: str):
-    return JSONResponse(
-        content="OK",
-        headers={
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "*",
-            "Access-Control-Allow-Headers": "*",
-            "Access-Control-Max-Age": "3600",
-        },
-    )
+app = FastAPI()
 
 # Initialize Supabase client
 supabase: Client = create_client(
@@ -59,7 +33,6 @@ async def search(search_query: SearchQuery):
         logger.info(f"Searching for query: {search_query.query} in language: {search_query.language}")
         
         try:
-            # Execute the search query
             results = supabase.table("MEDLINEPLUS") \
                 .select("""
                     topic_id,
@@ -97,28 +70,6 @@ async def search(search_query: SearchQuery):
         logger.error(f"Search error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/test")
-async def test():
-    try:
-        # Test the connection with a simple query
-        result = supabase.table("MEDLINEPLUS") \
-            .select("topic_id,title") \
-            .limit(1) \
-            .execute()
-        
-        return {
-            "status": "success",
-            "connection": "valid",
-            "sample_data": result.data
-        }
-    except Exception as e:
-        logger.error(f"Supabase connection test error: {str(e)}")
-        return {
-            "status": "error",
-            "connection": "invalid",
-            "error": str(e)
-        }
-
 @app.get("/hello")
 async def hello():
     logger.info("Hello endpoint called")
@@ -130,21 +81,5 @@ async def root():
     return {
         "status": "online",
         "time": str(datetime.now()),
-        "endpoints": [
-            "/hello",
-            "/search",
-            "/test"
-        ]
-    }
-
-@app.get("/ping")
-async def ping():
-    logger.info("Ping endpoint called")
-    return {
-        "status": "ok",
-        "time": str(datetime.now()),
-        "env": {
-            "SUPABASE_URL": os.getenv("SUPABASE_URL", "not_set"),
-            "SUPABASE_KEY": "present" if os.getenv("SUPABASE_KEY") else "not_set"
-        }
+        "endpoints": ["/hello", "/search"]
     }
