@@ -31,10 +31,14 @@
         <div id="personalInfoResult" class="result"></div>
     </div>
 
+    <div>
+        <h3>Test Connection</h3>
+        <button onclick="testHello()">Test API Connection</button>
+        <div id="helloResult" class="result"></div>
+    </div>
+
     <script>
-        const API_BASE_URL = window.location.hostname === 'localhost' 
-            ? '' 
-            : '';
+        const API_BASE_URL = '';
 
         async function testSearch() {
             const query = document.getElementById('searchQuery').value;
@@ -119,8 +123,12 @@
                 const response = await fetch(`${API_BASE_URL}/api/hello`);
                 const data = await response.json();
                 console.log('Hello response:', data);
+                document.getElementById('helloResult').textContent = 
+                    JSON.stringify(data, null, 2);
             } catch (error) {
                 console.error('Hello error:', error);
+                document.getElementById('helloResult').textContent = 
+                    `Error: ${error.message}`;
             }
         }
     </script>

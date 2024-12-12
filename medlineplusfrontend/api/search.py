@@ -7,6 +7,7 @@ from supabase import create_client, Client
 from dotenv import load_dotenv
 import logging
 from fastapi.responses import JSONResponse
+from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -53,6 +54,7 @@ class SearchQuery(BaseModel):
 
 @app.post("/api/search")
 async def search(search_query: SearchQuery):
+    logger.info(f"Search endpoint called with query: {search_query}")
     try:
         logger.info(f"Searching for query: {search_query.query} in language: {search_query.language}")
         
@@ -119,4 +121,5 @@ async def test():
 
 @app.get("/api/hello")
 async def hello():
-    return {"message": "Hello World"}
+    logger.info("Hello endpoint called")
+    return {"message": "Hello World", "timestamp": str(datetime.now())}
