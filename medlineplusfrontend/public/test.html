@@ -34,25 +34,46 @@
     <script>
         const API_BASE_URL = window.location.hostname === 'localhost' 
             ? '' 
-            : 'https://plainmed-dl5pb5svy-elparkos-projects.vercel.app';
+            : 'https://plainmed-852ed8tsh-elparkos-projects.vercel.app';
 
         async function testSearch() {
             const query = document.getElementById('searchQuery').value;
             const language = document.getElementById('language').value;
+            
+            console.log('Sending search request:', {
+                query,
+                n_results: 5,
+                language
+            });
+
             try {
                 const response = await fetch(`${API_BASE_URL}/api/search`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify({
                         query,
                         n_results: 5,
                         language
                     })
                 });
+
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                }
+
                 const data = await response.json();
+                console.log('Response data:', data);
+                
                 document.getElementById('searchResult').textContent = 
                     JSON.stringify(data, null, 2);
             } catch (error) {
+                console.error('Search error:', error);
                 document.getElementById('searchResult').textContent = 
                     `Error: ${error.message}`;
             }
