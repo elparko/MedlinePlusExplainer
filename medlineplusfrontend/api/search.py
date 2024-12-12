@@ -136,3 +136,15 @@ async def root():
             "/test"
         ]
     }
+
+@app.get("/ping")
+async def ping():
+    logger.info("Ping endpoint called")
+    return {
+        "status": "ok",
+        "time": str(datetime.now()),
+        "env": {
+            "SUPABASE_URL": os.getenv("SUPABASE_URL", "not_set"),
+            "SUPABASE_KEY": "present" if os.getenv("SUPABASE_KEY") else "not_set"
+        }
+    }
