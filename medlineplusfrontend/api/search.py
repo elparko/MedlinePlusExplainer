@@ -123,3 +123,16 @@ async def test():
 async def hello():
     logger.info("Hello endpoint called")
     return {"message": "Hello World", "timestamp": str(datetime.now())}
+
+@app.get("/")
+async def root():
+    logger.info("Root endpoint called")
+    return {
+        "status": "online",
+        "time": str(datetime.now()),
+        "endpoints": [
+            "/api/hello",
+            "/api/search",
+            "/api/test"
+        ]
+    }

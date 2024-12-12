@@ -39,19 +39,19 @@
 
     <script>
         const API_BASE_URL = '';
+        console.log('Current hostname:', window.location.hostname);
+        console.log('Current origin:', window.location.origin);
+        console.log('API Base URL:', API_BASE_URL);
 
         async function testSearch() {
             const query = document.getElementById('searchQuery').value;
             const language = document.getElementById('language').value;
             
-            console.log('Sending search request:', {
-                query,
-                n_results: 5,
-                language
-            });
-
+            const url = `${API_BASE_URL}/api/search`;
+            console.log('Attempting to fetch from:', url);
+            
             try {
-                const response = await fetch(`${API_BASE_URL}/api/search`, {
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
