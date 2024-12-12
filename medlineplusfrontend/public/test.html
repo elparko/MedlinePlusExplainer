@@ -32,8 +32,8 @@
     </div>
 
     <script>
-        // API base URL - change this to match your Vercel deployment
-        const API_BASE_URL = window.location.origin + '/api';
+        // API base URL
+        const API_BASE_URL = 'https://plainmed-852ed8tsh-elparkos-projects.vercel.app/api';
         
         console.log('Script starting...', 'API_BASE_URL:', API_BASE_URL);
         
@@ -50,6 +50,7 @@
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
+                    credentials: 'include',
                     body: JSON.stringify({
                         query,
                         n_results: 5,
@@ -81,7 +82,9 @@
         async function testHello() {
             console.log('Testing hello endpoint');
             try {
-                const response = await fetch(`${API_BASE_URL}/hello`);
+                const response = await fetch(`${API_BASE_URL}/hello`, {
+                    credentials: 'include'
+                });
                 console.log('Response:', response);
                 
                 const data = await response.json();
