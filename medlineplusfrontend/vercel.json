@@ -16,8 +16,16 @@
       "dest": "api/$1.py"
     },
     {
+      "src": "/favicon.ico",
+      "dest": "/public/favicon.ico"
+    },
+    {
       "src": "/(.*)",
       "dest": "/public/$1"
+    },
+    {
+      "src": "/",
+      "dest": "/public/index.html"
     }
   ]
 } 
