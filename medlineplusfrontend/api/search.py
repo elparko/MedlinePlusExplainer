@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
@@ -7,7 +7,6 @@ from supabase import create_client, Client
 from dotenv import load_dotenv
 import logging
 from fastapi.responses import JSONResponse
-from fastapi import Request
 
 # Load environment variables
 load_dotenv()
@@ -18,14 +17,28 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-# Configure CORS to accept all Vercel deployments
+# More permissive CORS settings
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins
-    allow_credentials=False,  # Must be False when allow_origins=["*"]
+    allow_origins=["*"],
+    allow_credentials=False,  # Must be False when using allow_origins=["*"]
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,
 )
+
+@app.options("/{path:path}")
+async def options_route(path: str):
+    return JSONResponse(
+        content="OK",
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Max-Age": "3600",
+        },
+    )
 
 # Initialize Supabase client
 supabase: Client = create_client(
