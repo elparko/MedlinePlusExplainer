@@ -1,29 +1,27 @@
-// @ts-expect-error 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-
-type Language = 'English' | 'Spanish'
+import React, { createContext, useContext, useState } from 'react';
 
 interface LanguageContextType {
-  language: Language
-  setLanguage: (language: Language) => void
+  currentLanguage: string;
+  setLanguage: (language: string) => void;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const LanguageContext = createContext<LanguageContextType>({
+  currentLanguage: 'English',
+  setLanguage: () => {},
+});
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>('English');
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const [currentLanguage, setCurrentLanguage] = useState('English');
+
+  const setLanguage = (language: string) => {
+    setCurrentLanguage(language);
+  };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage }}>
+    <LanguageContext.Provider value={{ currentLanguage, setLanguage }}>
       {children}
     </LanguageContext.Provider>
   );
 }
 
-export function useLanguage() {
-  const context = useContext(LanguageContext);
-  if (context === undefined) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
-  }
-  return context;
-} 
+export const useLanguage = () => useContext(LanguageContext); 

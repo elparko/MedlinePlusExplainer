@@ -15,6 +15,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
 import { ThemeToggle } from './ui/theme-toggle'
+import { apiService } from '@/services/api'
 
 interface Disease {
   name: string;
@@ -244,25 +245,16 @@ export function MedicalHistoryForm({
 
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/search`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          query: term,
-          n_results: 5,
-          language: language
-        }),
-      })
+      const response = await apiService.search({
+        query: term,
+        n_results: 5,
+        language: language
+      });
       
-      const data = await response.json()
-      console.log('Search response:', data);
+      console.log('Search response:', response);
       
-      if (!response.ok) throw new Error('Failed to fetch suggestions')
-      
-      if (data.results && Array.isArray(data.results)) {
-        const diseases: Disease[] = data.results.map((result: SupabaseResult) => ({
+      if (response.results && Array.isArray(response.results)) {
+        const diseases: Disease[] = response.results.map((result: SupabaseResult) => ({
           name: result.title,
           name_es: result.title_es || result.title,
           concept_id: result.topic_id.toString(),
@@ -270,12 +262,12 @@ export function MedicalHistoryForm({
           sources: "MedlinePlus",
           meta_desc: result.meta_desc,
           full_summary: result.full_summary
-        }))
+        }));
         
         console.log('Formatted diseases:', diseases);
         setSuggestions(diseases)
       } else {
-        console.error('Unexpected response format:', data)
+        console.error('Unexpected response format:', response)
         setSuggestions([])
       }
     } catch (error) {
