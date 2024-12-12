@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+    <style>
+        body { padding: 20px; font-family: Arial, sans-serif; }
+        .result { margin-top: 20px; white-space: pre-wrap; }
+        button { margin: 5px; padding: 5px 10px; }
+        input, select { margin: 5px; padding: 5px; }
+    </style>
+</head>
+<body>
+    <h2>Test API Endpoints</h2>
+    
+    <div>
+        <h3>Search</h3>
+        <input type="text" id="searchQuery" placeholder="Search term">
+        <select id="language">
+            <option value="English">English</option>
+            <option value="Spanish">Spanish</option>
+        </select>
+        <button onclick="testSearch()">Test Search</button>
+        <div id="searchResult" class="result"></div>
+    </div>
+
+    <div>
+        <h3>Personal Info</h3>
+        <input type="text" id="userId" placeholder="User ID">
+        <button onclick="getPersonalInfo()">Get Personal Info</button>
+        <button onclick="createPersonalInfo()">Create Personal Info</button>
+        <div id="personalInfoResult" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? '' 
+            : 'https://plainmed-dl5pb5svy-elparkos-projects.vercel.app';
+
+        async function testSearch() {
+            const query = document.getElementById('searchQuery').value;
+            const language = document.getElementById('language').value;
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/search`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        query,
+                        n_results: 5,
+                        language
+                    })
+                });
+                const data = await response.json();
+                document.getElementById('searchResult').textContent = 
+                    JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('searchResult').textContent = 
+                    `Error: ${error.message}`;
+            }
+        }
+
+        async function getPersonalInfo() {
+            const userId = document.getElementById('userId').value;
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/personal-info/${userId}`);
+                const data = await response.json();
+                document.getElementById('personalInfoResult').textContent = 
+                    JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('personalInfoResult').textContent = 
+                    `Error: ${error.message}`;
+            }
+        }
+
+        async function createPersonalInfo() {
+            const userId = document.getElementById('userId').value;
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/personal-info`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        age_range: '18-30',
+                        gender: 'male',
+                        language: 'English'
+                    })
+                });
+                const data = await response.json();
+                document.getElementById('personalInfoResult').textContent = 
+                    JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('personalInfoResult').textContent = 
+                    `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html> 

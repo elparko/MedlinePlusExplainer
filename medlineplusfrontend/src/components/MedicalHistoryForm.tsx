@@ -244,7 +244,7 @@ export function MedicalHistoryForm({
 
     setIsLoading(true)
     try {
-      const response = await fetch(`http://localhost:8000/search`, {
+      const response = await fetch(`/api/search`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
